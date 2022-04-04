@@ -47,16 +47,16 @@
  #define JucePlugin_Manufacturer           "yourcompany"
 #endif
 #ifndef  JucePlugin_ManufacturerWebsite
- #define JucePlugin_ManufacturerWebsite    ""
+ #define JucePlugin_ManufacturerWebsite    "www.thebuzzybrain.com"
 #endif
 #ifndef  JucePlugin_ManufacturerEmail
- #define JucePlugin_ManufacturerEmail      ""
+ #define JucePlugin_ManufacturerEmail      "Salatd0852@gmail.com"
 #endif
 #ifndef  JucePlugin_ManufacturerCode
  #define JucePlugin_ManufacturerCode       0x4d616e75
 #endif
 #ifndef  JucePlugin_PluginCode
- #define JucePlugin_PluginCode             0x56767a74
+ #define JucePlugin_PluginCode             0x4a647737
 #endif
 #ifndef  JucePlugin_IsSynth
  #define JucePlugin_IsSynth                0

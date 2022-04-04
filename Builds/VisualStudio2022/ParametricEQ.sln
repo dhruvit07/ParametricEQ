@@ -2,17 +2,17 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio Version 17
 
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParametricEQ - Standalone Plugin", "ParametricEQ_StandalonePlugin.vcxproj", "{1578695D-C2B1-AC94-3874-26A33307DE8C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParametricEQ - Standalone Plugin", "ParametricEQ_StandalonePlugin.vcxproj", "{3A5ED719-0F55-EA9C-1823-B7EDD154A6A9}"
 	ProjectSection(ProjectDependencies) = postProject
-		{20D61305-82EE-5436-BB65-AA6EEBD9AD45} = {20D61305-82EE-5436-BB65-AA6EEBD9AD45}
+		{E1408266-B2E4-BA01-62F0-536CFE1699EA} = {E1408266-B2E4-BA01-62F0-536CFE1699EA}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParametricEQ - VST3", "ParametricEQ_VST3.vcxproj", "{860402B2-E6DA-6CF1-EFF1-B47B10A4197A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParametricEQ - VST3", "ParametricEQ_VST3.vcxproj", "{70B7BEDB-64F1-E060-2137-FDC11ADDF38E}"
 	ProjectSection(ProjectDependencies) = postProject
-		{20D61305-82EE-5436-BB65-AA6EEBD9AD45} = {20D61305-82EE-5436-BB65-AA6EEBD9AD45}
+		{E1408266-B2E4-BA01-62F0-536CFE1699EA} = {E1408266-B2E4-BA01-62F0-536CFE1699EA}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParametricEQ - Shared Code", "ParametricEQ_SharedCode.vcxproj", "{20D61305-82EE-5436-BB65-AA6EEBD9AD45}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParametricEQ - Shared Code", "ParametricEQ_SharedCode.vcxproj", "{E1408266-B2E4-BA01-62F0-536CFE1699EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,18 +20,18 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{860402B2-E6DA-6CF1-EFF1-B47B10A4197A}.Debug|x64.ActiveCfg = Debug|x64
-		{860402B2-E6DA-6CF1-EFF1-B47B10A4197A}.Debug|x64.Build.0 = Debug|x64
-		{860402B2-E6DA-6CF1-EFF1-B47B10A4197A}.Release|x64.ActiveCfg = Release|x64
-		{860402B2-E6DA-6CF1-EFF1-B47B10A4197A}.Release|x64.Build.0 = Release|x64
-		{1578695D-C2B1-AC94-3874-26A33307DE8C}.Debug|x64.ActiveCfg = Debug|x64
-		{1578695D-C2B1-AC94-3874-26A33307DE8C}.Debug|x64.Build.0 = Debug|x64
-		{1578695D-C2B1-AC94-3874-26A33307DE8C}.Release|x64.ActiveCfg = Release|x64
-		{1578695D-C2B1-AC94-3874-26A33307DE8C}.Release|x64.Build.0 = Release|x64
-		{20D61305-82EE-5436-BB65-AA6EEBD9AD45}.Debug|x64.ActiveCfg = Debug|x64
-		{20D61305-82EE-5436-BB65-AA6EEBD9AD45}.Debug|x64.Build.0 = Debug|x64
-		{20D61305-82EE-5436-BB65-AA6EEBD9AD45}.Release|x64.ActiveCfg = Release|x64
-		{20D61305-82EE-5436-BB65-AA6EEBD9AD45}.Release|x64.Build.0 = Release|x64
+		{70B7BEDB-64F1-E060-2137-FDC11ADDF38E}.Debug|x64.ActiveCfg = Debug|x64
+		{70B7BEDB-64F1-E060-2137-FDC11ADDF38E}.Debug|x64.Build.0 = Debug|x64
+		{70B7BEDB-64F1-E060-2137-FDC11ADDF38E}.Release|x64.ActiveCfg = Release|x64
+		{70B7BEDB-64F1-E060-2137-FDC11ADDF38E}.Release|x64.Build.0 = Release|x64
+		{3A5ED719-0F55-EA9C-1823-B7EDD154A6A9}.Debug|x64.ActiveCfg = Debug|x64
+		{3A5ED719-0F55-EA9C-1823-B7EDD154A6A9}.Debug|x64.Build.0 = Debug|x64
+		{3A5ED719-0F55-EA9C-1823-B7EDD154A6A9}.Release|x64.ActiveCfg = Release|x64
+		{3A5ED719-0F55-EA9C-1823-B7EDD154A6A9}.Release|x64.Build.0 = Release|x64
+		{E1408266-B2E4-BA01-62F0-536CFE1699EA}.Debug|x64.ActiveCfg = Debug|x64
+		{E1408266-B2E4-BA01-62F0-536CFE1699EA}.Debug|x64.Build.0 = Debug|x64
+		{E1408266-B2E4-BA01-62F0-536CFE1699EA}.Release|x64.ActiveCfg = Release|x64
+		{E1408266-B2E4-BA01-62F0-536CFE1699EA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

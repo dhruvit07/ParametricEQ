@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="VvZto6" name="ParametricEQ" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
-  <MAINGROUP id="DGBFu5" name="ParametricEQ">
-    <GROUP id="{64FE2D23-9A77-A37D-A957-27B877896ABC}" name="Source">
-      <FILE id="cAoWcT" name="PluginProcessor.cpp" compile="1" resource="0"
+<JUCERPROJECT id="JDW7ga" name="ParametricEQ" projectType="audioplug" useAppConfig="0"
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              companyEmail="Salatd0852@gmail.com" companyWebsite="www.thebuzzybrain.com"
+              cppLanguageStandard="17">
+  <MAINGROUP id="ja7jJQ" name="ParametricEQ">
+    <GROUP id="{C0D4E705-6DFD-479C-58EC-87042953C83E}" name="Source">
+      <FILE id="bIemDg" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
-      <FILE id="zjCI9b" name="PluginProcessor.h" compile="0" resource="0"
+      <FILE id="UrcZn1" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="doKjSF" name="PluginEditor.cpp" compile="1" resource="0"
+      <FILE id="BG9yCG" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
-      <FILE id="UklEWF" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="AMYvwP" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
