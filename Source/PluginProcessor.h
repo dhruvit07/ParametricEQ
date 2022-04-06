@@ -103,7 +103,7 @@ private:
   template<typename ChainType, typename CoefficientType>
   void updateCutFilter(ChainType& leftLowCut, 
                        CoefficientType& cutCoefficients, 
-                       Slope& slope) {
+                       const Slope& slope) {
 
 
       leftLowCut.template setBypassed<0>(true);
@@ -128,7 +128,11 @@ private:
          
 
       }
+
   }
+  void updateLowCutFilters(const ChainSettings& chainSettings);
+  void updateHighCutFilters(const ChainSettings& chainSettings);
+  void updateFilters();
 
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ParametricEQAudioProcessor)
