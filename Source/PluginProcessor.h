@@ -21,7 +21,7 @@ struct ChainSettings
 {
   float peakFreq{0}, peakGain{0}, peakQuality{0};
   float lowCutFreq{0}, highCutFreq{0};
-  int lowCutSlope{ Slope::Slope_12 }, highCutSlope{ Slope::Slope_12 };
+  Slope lowCutSlope{ Slope::Slope_12 }, highCutSlope{ Slope::Slope_12 };
 };
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts);
@@ -101,7 +101,9 @@ private:
   }
   
   template<typename ChainType, typename CoefficientType>
-  void updateCutFilter(ChainType& leftLowCut, CoefficientType& cutCoefficients, const ChainSettings& chainSettings) {
+  void updateCutFilter(ChainType& leftLowCut, 
+                       CoefficientType& cutCoefficients, 
+                       Slope& slope) {
 
 
       leftLowCut.template setBypassed<0>(true);
@@ -109,7 +111,8 @@ private:
       leftLowCut.template setBypassed<2>(true);
       leftLowCut.template setBypassed<3>(true);
 
-      switch ( chainSettings.lowCutSlope )
+
+      switch ( slope )
       {
       case Slope_48:
           update<3>(leftLowCut, cutCoefficients);
