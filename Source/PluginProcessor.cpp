@@ -175,8 +175,8 @@ bool ParametricEQAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor *ParametricEQAudioProcessor::createEditor()
 {
-   // return new ParametricEQAudioProcessorEditor(*this);
-    return new juce::GenericAudioProcessorEditor(*this);
+   return new ParametricEQAudioProcessorEditor(*this);
+    //return new juce::GenericAudioProcessorEditor(*this);
 }
 
 //==============================================================================
@@ -185,12 +185,23 @@ void ParametricEQAudioProcessor::getStateInformation(juce::MemoryBlock &destData
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+
+    juce::MemoryOutputStream mos(destData, true);
+    apvts.state.writeToStream(mos);
 }
 
 void ParametricEQAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+
+    auto tree = juce::ValueTree::readFromData(data, sizeInBytes);
+
+    if (tree.isValid())
+    {
+        apvts.replaceState(tree);
+        updateFilters();
+    }
 }
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts)
@@ -234,27 +245,27 @@ ParametricEQAudioProcessor::createParameterLayout()
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("LowCut Freq",
                                                            "LowCut Freq",
-                                                           juce::NormalisableRange<float>(20.f, 20000.f, 1., 1.f),
+                                                           juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f),
                                                            20.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("HighCut Freq",
                                                            "HighCut Freq",
-                                                           juce::NormalisableRange<float>(20.f, 20000.f, 1., 0.5f),
+                                                           juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f),
                                                            20000.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Freq",
                                                            "Peak Freq",
-                                                           juce::NormalisableRange<float>(20.f, 20000.f, 1., 1.f),
+                                                           juce::NormalisableRange<float>(20.f, 20000.f, 1.f, 0.25f),
                                                            750.f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Gain",
                                                            "Peak Gain",
-                                                           juce::NormalisableRange<float>(-24.f, 24.f, 0.5, 1.f),
+                                                           juce::NormalisableRange<float>(-24.f, 24.f, 0.5f, 1.f),
                                                            0.0f));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>("Peak Quality",
                                                            "Peak Quality",
-                                                           juce::NormalisableRange<float>(0.1f, 10.f, 0.05, 1.f),
+                                                           juce::NormalisableRange<float>(0.1f, 10.f, 0.05f, 1.f),
                                                            1.f));
 
     juce::StringArray stringArray;

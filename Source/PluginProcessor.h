@@ -19,12 +19,24 @@ enum Slope {
 
 struct ChainSettings
 {
-  float peakFreq{0}, peakGain{0}, peakQuality{0};
+  float peakFreq{0}, peakGain{0}, peakQuality{1.f};
   float lowCutFreq{0}, highCutFreq{0};
   Slope lowCutSlope{ Slope::Slope_12 }, highCutSlope{ Slope::Slope_12 };
 };
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts);
+
+using Filter = juce::dsp::IIR::Filter<float>;
+using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+
+enum ChainPositions
+{
+    LowCut,
+    Peak,
+    HighCut
+};
+
 
 //==============================================================================
 /**
@@ -74,26 +86,17 @@ public:
       *this, nullptr, "Parameters", createParameterLayout()};
 
 private:
-  using Filter = juce::dsp::IIR::Filter<float>;
-  using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-  using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
-
   MonoChain leftChain, rightChain;
 
   using Coefficients = Filter::CoefficientsPtr;
-  static void updateCoefficients(Coefficients& old, const Coefficients& replacements);
+  void updateCoefficients(Coefficients& old, const Coefficients& replacements);
 
-  enum ChainPositions 
-  {
-    LowCut,
-    Peak,
-    HighCut
-  };
+ 
 
   void updatePeakFilter(const ChainSettings& chainSettings);
 
   template<int Index, typename ChainType, typename CoefficientType>
-  void update(ChainType& chain, CoefficientType& Coefficients)
+  void update(ChainType& chain,const CoefficientType& Coefficients)
   {
       updateCoefficients(chain.template get<Index>().coefficients, Coefficients[Index]);
       chain.template setBypassed<Index>(false);
@@ -101,32 +104,32 @@ private:
   }
   
   template<typename ChainType, typename CoefficientType>
-  void updateCutFilter(ChainType& leftLowCut, 
-                       CoefficientType& cutCoefficients, 
-                       const Slope& slope) {
+  void updateCutFilter(ChainType& chain,
+      const CoefficientType& cutCoefficients,
+      const Slope& slope) {
 
 
-      leftLowCut.template setBypassed<0>(true);
-      leftLowCut.template setBypassed<1>(true);
-      leftLowCut.template setBypassed<2>(true);
-      leftLowCut.template setBypassed<3>(true);
+      chain.template setBypassed<0>(true);
+      chain.template setBypassed<1>(true);
+      chain.template setBypassed<2>(true);
+      chain.template setBypassed<3>(true);
 
 
-      switch ( slope )
+      switch (slope)
       {
       case Slope_48:
-          update<3>(leftLowCut, cutCoefficients);
-
+      {   update<3>(chain, cutCoefficients);
+      }
       case Slope_36:
-          update <2>(leftLowCut, cutCoefficients);
-
+      {   update <2>(chain, cutCoefficients);
+      }
       case Slope_24:
-          update<1>(leftLowCut, cutCoefficients);
-        
+      {   update<1>(chain, cutCoefficients);
+      }
       case Slope_12:
-          update<0>(leftLowCut, cutCoefficients);
-         
+      {   update<0>(chain, cutCoefficients);
 
+       }
       }
 
   }
