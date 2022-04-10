@@ -31,12 +31,14 @@ void LookAndFeel::drawRotarySlider(juce::Graphics& g,
     g.setColour(enabled ? Colour(255u, 154u, 1u) : Colours::grey);
     g.drawEllipse(bounds, 1.f);*/
 
-    g.setColour(Colour(33u, 33u, 33u));
+    g.setColour(Colours::ghostwhite);
     g.fillEllipse(bounds);
 
-    g.setColour(Colour(31u, 207u, 54u));
+    g.setColour(Colours::darkgrey);
     g.drawEllipse(bounds, 1.f);
 
+    g.setColour(Colours::grey);
+    g.drawEllipse(bounds, 1.f);
     if (auto* rswl = dynamic_cast<RotarySliderWithLabels*>(&slider))
     {
         auto center = bounds.getCentre();
