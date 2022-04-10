@@ -206,16 +206,32 @@ void ParametricEQAudioProcessor::setStateInformation(const void *data, int sizeI
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts)
 {
-    ChainSettings settings;
+    // ChainSettings settings;
 
+    // settings.lowCutFreq = apvts.getRawParameterValue("LowCut Freq")->load();
+    // settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCut Slope")->load());
+    // settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCut Slope")->load());
+    // settings.highCutFreq = apvts.getRawParameterValue("HighCut Freq")->load();
+    // settings.peakFreq = apvts.getRawParameterValue("Peak Freq")->load();
+    // settings.peakGain = apvts.getRawParameterValue("Peak Gain")->load();
+    // settings.peakQuality = apvts.getRawParameterValue("Peak Quality")->load();
+
+    // return settings;
+
+   ChainSettings settings;
+    
     settings.lowCutFreq = apvts.getRawParameterValue("LowCut Freq")->load();
-    settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCut Slope")->load());
-    settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCut Slope")->load());
     settings.highCutFreq = apvts.getRawParameterValue("HighCut Freq")->load();
     settings.peakFreq = apvts.getRawParameterValue("Peak Freq")->load();
     settings.peakGain = apvts.getRawParameterValue("Peak Gain")->load();
     settings.peakQuality = apvts.getRawParameterValue("Peak Quality")->load();
-
+    settings.lowCutSlope = static_cast<Slope>(apvts.getRawParameterValue("LowCut Slope")->load());
+    settings.highCutSlope = static_cast<Slope>(apvts.getRawParameterValue("HighCut Slope")->load());
+    
+    // settings.lowCutBypassed = apvts.getRawParameterValue("LowCut Bypassed")->load() > 0.5f;
+    // settings.peakBypassed = apvts.getRawParameterValue("Peak Bypassed")->load() > 0.5f;
+    // settings.highCutBypassed = apvts.getRawParameterValue("HighCut Bypassed")->load() > 0.5f;
+    
     return settings;
 }
 
@@ -246,6 +262,38 @@ void ParametricEQAudioProcessor::updatePeakFilter(const ChainSettings& chainSett
 
 void updateCoefficients(Coefficients& old, const Coefficients& replacements) {
     *old = *replacements;
+}
+
+void ParametricEQAudioProcessor::updateLowCutFilters(const ChainSettings& chainSettings)
+{
+
+    auto lowCutCoefficients = makeLowCutFilter(chainSettings, getSampleRate());
+
+    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
+    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
+
+    updateCutFilter(leftLowCut, lowCutCoefficients, chainSettings.lowCutSlope);
+    updateCutFilter(rightLowCut, lowCutCoefficients, chainSettings.lowCutSlope);
+
+}
+void ParametricEQAudioProcessor::updateHighCutFilters(const ChainSettings& chainSettings)
+{
+    auto highCutCoefficients = makeHighCutFilter(chainSettings, getSampleRate());
+
+    auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
+
+    auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
+    updateCutFilter(leftHighCut, highCutCoefficients, chainSettings.highCutSlope);
+    updateCutFilter(rightHighCut, highCutCoefficients, chainSettings.highCutSlope);
+
+}
+
+void ParametricEQAudioProcessor::updateFilters()
+{
+    auto chainSettings = getChainSettings(apvts);
+    updateLowCutFilters(chainSettings);
+    updatePeakFilter(chainSettings);
+    updateHighCutFilters(chainSettings);
 }
 
 juce::AudioProcessorValueTreeState::ParameterLayout
@@ -300,38 +348,7 @@ ParametricEQAudioProcessor::createParameterLayout()
     return layout;
 }
 
-void ParametricEQAudioProcessor::updateLowCutFilters(const ChainSettings& chainSettings)
-{
 
-    auto lowCutCoefficients = makeLowCutFilter(chainSettings, getSampleRate());
-
-    auto& leftLowCut = leftChain.get<ChainPositions::LowCut>();
-    auto& rightLowCut = rightChain.get<ChainPositions::LowCut>();
-
-    updateCutFilter(leftLowCut, lowCutCoefficients, chainSettings.lowCutSlope);
-    updateCutFilter(rightLowCut, lowCutCoefficients, chainSettings.lowCutSlope);
-
-}
-void ParametricEQAudioProcessor::updateHighCutFilters(const ChainSettings& chainSettings)
-{
-    auto highCutCoefficients = makeLowCutFilter(chainSettings, getSampleRate());
-
-    auto& leftHighCut = leftChain.get<ChainPositions::HighCut>();
-
-    auto& rightHighCut = rightChain.get<ChainPositions::HighCut>();
-    updateCutFilter(leftHighCut, highCutCoefficients, chainSettings.highCutSlope);
-
-    updateCutFilter(rightHighCut, highCutCoefficients, chainSettings.highCutSlope);
-
-}
-
-void ParametricEQAudioProcessor::updateFilters()
-{
-    auto chainSettings = getChainSettings(apvts);
-    updateLowCutFilters(chainSettings);
-    updatePeakFilter(chainSettings);
-    updateHighCutFilters(chainSettings);
-}
 
 //==============================================================================
 // This creates new instances of the plugin..

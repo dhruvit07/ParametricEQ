@@ -19,11 +19,12 @@ enum Slope {
 
 struct ChainSettings
 {
-  float peakFreq{0}, peakGain{0}, peakQuality{1.f};
-  float lowCutFreq{0}, highCutFreq{0};
-  Slope lowCutSlope{ Slope::Slope_12 };
-  Slope highCutSlope{ Slope::Slope_12 };
+    float peakFreq { 0 }, peakGain{ 0 }, peakQuality { 1.f };
+    float lowCutFreq { 0 }, highCutFreq { 0 };
+    
+    Slope lowCutSlope { Slope::Slope_12 }, highCutSlope { Slope::Slope_12 };
 };
+
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState &apvts);
 
@@ -32,18 +33,18 @@ using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
 using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
 
 
-using Coefficients = Filter::CoefficientsPtr;
-void updateCoefficients(Coefficients& old, const Coefficients& replacements);
-
-Coefficients makePeakFilter(const ChainSettings& chainSettings, double sampleRate);
-
-
 enum ChainPositions
 {
     LowCut,
     Peak,
     HighCut
 };
+
+using Coefficients = Filter::CoefficientsPtr;
+void updateCoefficients(Coefficients& old, const Coefficients& replacements);
+
+Coefficients makePeakFilter(const ChainSettings& chainSettings, double sampleRate);
+
 
 template<int Index, typename ChainType, typename CoefficientType>
 void update(ChainType& chain, const CoefficientType& coefficients)
@@ -62,7 +63,7 @@ void updateCutFilter(ChainType& chain,
     chain.template setBypassed<2>(true);
     chain.template setBypassed<3>(true);
 
-    switch (slope)
+    switch ( slope )
     {
     case Slope_48:
     {
@@ -82,18 +83,18 @@ void updateCutFilter(ChainType& chain,
     }
     }
 }
-inline auto makeLowCutFilter(const ChainSettings& chainSettings, double sampleRate)
+inline auto makeLowCutFilter(const ChainSettings& chainSettings, double sampleRate )
 {
     return juce::dsp::FilterDesign<float>::designIIRHighpassHighOrderButterworthMethod(chainSettings.lowCutFreq,
-        sampleRate,
-        2 * (chainSettings.lowCutSlope + 1));
+                                                                                       sampleRate,
+                                                                                       2 * (chainSettings.lowCutSlope + 1));
 }
 
-inline auto makeHighCutFilter(const ChainSettings& chainSettings, double sampleRate)
+inline auto makeHighCutFilter(const ChainSettings& chainSettings, double sampleRate )
 {
     return juce::dsp::FilterDesign<float>::designIIRLowpassHighOrderButterworthMethod(chainSettings.highCutFreq,
-        sampleRate,
-        2 * (chainSettings.highCutSlope + 1));
+                                                                                      sampleRate,
+                                                                                      2 * (chainSettings.highCutSlope + 1));
 }
 //==============================================================================
 /**
