@@ -78,10 +78,9 @@ struct ResponseCurveComponent : public juce::Component,
 
     void timerCallback() override;
 
-    void updateChain();
-
     void paint(juce::Graphics& g) override;
-    //void resized() override {}
+
+    void resized() override;
 
    /* void toggleanalysisenablement(bool enabled)
     {
@@ -95,6 +94,28 @@ private:
 
     MonoChain monoChain;
 
+
+    void updateResponseCurve();
+
+    juce::Path responseCurve;
+
+    void updateChain();
+
+    void drawBackgroundGrid(juce::Graphics& g);
+   
+    juce::Image background;
+
+    void drawTextLabels(juce::Graphics& g);
+
+    std::vector<float> getFrequencies();
+    std::vector<float> getGains();
+    std::vector<float> getXs(const std::vector<float>& freqs, float left, float width);
+
+    juce::Rectangle<int> getRenderArea();
+
+    juce::Rectangle<int> getAnalysisArea();
+
+    //PathProducer leftPathProducer, rightPathProducer;
 };
 
 //==============================================================================

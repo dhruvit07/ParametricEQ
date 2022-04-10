@@ -243,11 +243,99 @@ void ResponseCurveComponent::timerCallback() {
 
 }
 
+juce::Rectangle<int> ResponseCurveComponent::getRenderArea()
+{
+    auto bounds = getLocalBounds();
+
+    bounds.removeFromTop(12);
+    //bounds.removeFromBottom(2);
+    bounds.removeFromLeft(20);
+    bounds.removeFromRight(20);
+
+    return bounds;
+}
+
+juce::Rectangle<int> ResponseCurveComponent::getAnalysisArea()
+{
+    auto bounds = getRenderArea();
+    bounds.removeFromTop(4);
+    bounds.removeFromBottom(4);
+    return bounds;
+}
+
+std::vector<float> ResponseCurveComponent::getFrequencies()
+{
+    return std::vector<float>
+    {
+        20, /*30, 40,*/ 50, 100,
+            200, /*300, 400,*/ 500, 1000,
+            2000, /*3000, 4000,*/ 5000, 10000,
+            20000
+    };
+}
+
+std::vector<float> ResponseCurveComponent::getGains()
+{
+    return std::vector<float>
+    {
+        -24, -12, 0, 12, 24
+    };
+}
+
+std::vector<float> ResponseCurveComponent::getXs(const std::vector<float>& freqs, float left, float width)
+{
+    std::vector<float> xs;
+    for (auto f : freqs)
+    {
+        auto normX = juce::mapFromLog10(f, 20.f, 20000.f);
+        xs.push_back(left + width * normX);
+    }
+
+    return xs;
+}
+
+void ResponseCurveComponent::resized() {
+    
+    using namespace juce;
+    background = Image(Image::PixelFormat::RGB, getWidth(), getHeight(), false);
+    Graphics g(background);
+  
+    auto freqs = getFrequencies();
+
+    auto renderArea = getAnalysisArea();
+    auto left = renderArea.getX();
+    auto right = renderArea.getRight();
+    auto top = renderArea.getY();
+    auto bottom = renderArea.getBottom();
+    auto width = renderArea.getWidth();
+
+    auto xs = getXs(freqs, left, width);
+
+    g.setColour(Colours::dimgrey);
+    for (auto x : xs)
+    {
+        g.drawVerticalLine(x, top, bottom);
+    }
+
+    auto gain = getGains();
+
+    for (auto gDb : gain)
+    {
+        auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
+
+        g.setColour(gDb == 0.f ? Colours::cornsilk : Colours::darkgrey);
+        g.drawHorizontalLine(y, left, right);
+    }
+}
+
 void ResponseCurveComponent::paint(juce::Graphics& g)
 {
 
     using namespace juce;
-    auto responseArea = getLocalBounds();
+    //auto responseArea = getLocalBounds();
+
+    g.drawImage(background, getLocalBounds().toFloat());
+    auto responseArea = getRenderArea();
 
     auto w = responseArea.getWidth();
 
@@ -372,7 +460,7 @@ ParametricEQAudioProcessorEditor::ParametricEQAudioProcessorEditor (ParametricEQ
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (600, 480);
+    setSize (600, 500);
 }
 
 ParametricEQAudioProcessorEditor::~ParametricEQAudioProcessorEditor()
@@ -385,11 +473,25 @@ void ParametricEQAudioProcessorEditor::paint (juce::Graphics& g)
 {
     //juce::File file = juce::File::getCurrentWorkingDirectory().getChildFile(img.jpeg);
     auto bounds = getLocalBounds();
-    auto img_bound = bounds.removeFromBottom(bounds.getHeight() * 0.75);
+    auto img_bound = bounds.removeFromBottom(bounds.getHeight() * 0.72);
     auto image = juce::ImageCache::getFromMemory(BinaryData::img_jpeg, BinaryData::img_jpegSize);
     juce::Rectangle<float> r;
-    r.setBounds(img_bound.getX(),img_bound.getY(), img_bound.getWidth(), img_bound.getHeight());
-    g.drawImage(image, r, juce::RectanglePlacement::stretchToFit, false);
+
+    g.setColour(juce::Colours::darkgrey);
+   r.setBounds( img_bound.getX(), 
+                img_bound.getY(), 
+                img_bound.getWidth(),  
+                img_bound.getHeight());
+    
+    g.drawRect( img_bound.getX(),
+                img_bound.getY(), 
+                img_bound.getWidth(), 
+                img_bound.getHeight(), 2);
+    
+   g.drawImage( image,
+                r, 
+                juce::RectanglePlacement::fillDestination, 
+                false);
 
    
 
@@ -401,24 +503,24 @@ void ParametricEQAudioProcessorEditor::resized()
     // subcomponents in your editor..
 
     auto bounds = getLocalBounds();
-    bounds.removeFromTop(4);
+   /* bounds.removeFromTop(4);
 
     auto analyzerEnabledArea = bounds.removeFromTop(25);
 
     analyzerEnabledArea.setWidth(50);
     analyzerEnabledArea.setX(5);
-    analyzerEnabledArea.removeFromTop(2);
+    analyzerEnabledArea.removeFromTop(2);*/
 
     //analyzerEnabledButton.setBounds(analyzerEnabledArea);
 
-    bounds.removeFromTop(5);
+    //bounds.removeFromTop(5);
 
     float hRatio = 25.f / 100.f; //JUCE_LIVE_CONSTANT(25) / 100.f;
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * hRatio); //change from 0.33 to 0.25 because I needed peak hz text to not overlap the slider thumb
 
     responseCurveComponent.setBounds(responseArea);
 
-    bounds.removeFromTop(5);
+    bounds.removeFromTop(20);
 
     auto lowCutArea = bounds.removeFromLeft(bounds.getWidth() * 0.33);
     auto highCutArea = bounds.removeFromRight(bounds.getWidth() * 0.5);
