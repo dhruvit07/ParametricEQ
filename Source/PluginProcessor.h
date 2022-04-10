@@ -22,7 +22,8 @@ struct ChainSettings
     float peakFreq { 0 }, peakGain{ 0 }, peakQuality { 1.f };
     float lowCutFreq { 0 }, highCutFreq { 0 };
     
-    Slope lowCutSlope { Slope::Slope_12 }, highCutSlope { Slope::Slope_12 };
+    Slope lowCutSlope{ Slope::Slope_12 };
+    Slope highCutSlope { Slope::Slope_12 };
 };
 
 
