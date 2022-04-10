@@ -77,41 +77,40 @@ void LookAndFeel::drawRotarySlider(juce::Graphics& g,
 
 juce::String RotarySliderWithLabels::getDisplayString() const
 {
-    //if (auto* choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param))
-    //    return choiceParam->getCurrentChoiceName();
+    if (auto* choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param))
+        return choiceParam->getCurrentChoiceName();
 
-    //juce::String str;
-    //bool addK = false;
+    juce::String str;
+    bool addK = false;
 
-    //if (auto* floatParam = dynamic_cast<juce::AudioParameterFloat*>(param))
-    //{
-    //    float val = getValue();
+    if (auto* floatParam = dynamic_cast<juce::AudioParameterFloat*>(param))
+    {
+        float val = getValue();
 
-    //    if (val > 999.f)
-    //    {
-    //        val /= 1000.f; //1001 / 1000 = 1.001
-    //        addK = true;
-    //    }
+        if (val > 999.f)
+        {
+            val /= 1000.f; //1001 / 1000 = 1.001
+            addK = true;
+        }
 
-    //    str = juce::String(val, (addK ? 2 : 0));
-    //}
-    //else
-    //{
-    //    jassertfalse; //this shouldn't happen!
-    //}
+        str = juce::String(val, (addK ? 2 : 0));
+    }
+    else
+    {
+        jassertfalse; //this shouldn't happen!
+    }
 
-    //if (suffix.isNotEmpty())
-    //{
-    //    str << " ";
-    //    if (addK)
-    //        str << "k";
+    if (suffix.isNotEmpty())
+    {
+        str << " ";
+        if (addK)
+            str << "k";
 
-    //    str << suffix;
-    //}
+        str << suffix;
+    }
 
-    //return str;
+    return str;
 
-    return juce::String(getValue());
 }
 
 void RotarySliderWithLabels::paint(juce::Graphics& g) {
@@ -125,10 +124,10 @@ void RotarySliderWithLabels::paint(juce::Graphics& g) {
 
     auto sliderBounds = getSliderBounds();
 
-    g.setColour(Colours::white);
+    /*g.setColour(Colours::white);
     g.drawRect(getLocalBounds()); 
     g.setColour(Colours::white);
-    g.drawRect(sliderBounds);
+    g.drawRect(sliderBounds);*/
 
     getLookAndFeel().drawRotarySlider(g,
         sliderBounds.getX(),
@@ -281,10 +280,10 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
         responseCurve.lineTo(responseArea.getX() + i, map(mags[i]));
     }
 
-    g.setColour(Colours::orange);
+    g.setColour(Colours::grey);
     g.drawRoundedRectangle(responseArea.toFloat(), 4.f, 1.f);
-    g.setColour(Colours::white);
-    g.strokePath(responseCurve, PathStrokeType(2.f));
+    g.setColour(Colours::ghostwhite);
+    g.strokePath(responseCurve, PathStrokeType(1.5f));
 
 }
 
@@ -332,7 +331,7 @@ ParametricEQAudioProcessorEditor::~ParametricEQAudioProcessorEditor()
 void ParametricEQAudioProcessorEditor::paint (juce::Graphics& g)
 {
 
-    g.fillAll(juce::Colours::black);
+    g.fillAll(juce::Colours::wheat);
    
 
 }
