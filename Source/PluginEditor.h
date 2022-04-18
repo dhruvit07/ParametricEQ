@@ -12,6 +12,7 @@
 #include "PluginProcessor.h"
 
 
+
 struct LookAndFeel : juce::LookAndFeel_V4
 {
     void drawRotarySlider(juce::Graphics&,
@@ -24,7 +25,7 @@ struct LookAndFeel : juce::LookAndFeel_V4
     void drawToggleButton(juce::Graphics& g,
         juce::ToggleButton& toggleButton,
         bool shouldDrawButtonAsHighlighted,
-        bool shouldDrawButtonAsDown) override {}
+        bool shouldDrawButtonAsDown) override;
 };
 
 struct RotarySliderWithLabels : juce::Slider
@@ -82,10 +83,10 @@ struct ResponseCurveComponent : public juce::Component,
 
     void resized() override;
 
-   /* void toggleanalysisenablement(bool enabled)
+    void toggleAnalysisEnablement(bool enabled)
     {
-        shouldshowfftanalysis = enabled;
-    }*/
+        //shouldShowFFTAnalysis = enabled;
+    }
 
 private:
     ParametricEQAudioProcessor& audioProcessor;
@@ -116,6 +117,33 @@ private:
     juce::Rectangle<int> getAnalysisArea();
 
     //PathProducer leftPathProducer, rightPathProducer;
+};
+
+
+struct PowerButton : juce::ToggleButton { };
+
+struct AnalyzerButton : juce::ToggleButton
+{
+    void resized() override
+    {
+        auto bounds = getLocalBounds();
+        auto insetRect = bounds.reduced(4);
+
+        randomPath.clear();
+
+        juce::Random r;
+
+        randomPath.startNewSubPath(insetRect.getX(),
+            insetRect.getY() + insetRect.getHeight() * r.nextFloat());
+
+        for (auto x = insetRect.getX() + 1; x < insetRect.getRight(); x += 2)
+        {
+            randomPath.lineTo(x,
+                insetRect.getY() + insetRect.getHeight() * r.nextFloat());
+        }
+    }
+
+    juce::Path randomPath;
 };
 
 //==============================================================================
@@ -162,6 +190,18 @@ private:
         highCutSlopeSliderAttachment;
 
     std::vector<juce::Component*> getComps();
+
+    PowerButton lowcutBypassButton, peakBypassButton, highcutBypassButton;
+    AnalyzerButton analyzerEnabledButton;
+
+    using ButtonAttachment = APVTS::ButtonAttachment;
+
+    ButtonAttachment lowcutBypassButtonAttachment,
+        peakBypassButtonAttachment,
+        highcutBypassButtonAttachment,
+        analyzerEnabledButtonAttachment;
+
+    LookAndFeel lnf;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ParametricEQAudioProcessorEditor)
 };
