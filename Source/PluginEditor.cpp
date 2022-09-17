@@ -240,7 +240,9 @@ juce::Rectangle<int> RotarySliderWithLabels::getSliderBounds() const
 
 }
 
-ResponseCurveComponent::ResponseCurveComponent(ParametricEQAudioProcessor& p) : audioProcessor(p)
+ResponseCurveComponent::ResponseCurveComponent(ParametricEQAudioProcessor& p) : audioProcessor(p), 
+leftPathProducer(audioProcessor.leftChannelFifo),
+rightPathProducer(audioProcessor.rightChannelFifo)
 {
     const auto& params = audioProcessor.getParameters();
     for (auto param : params)
@@ -290,7 +292,55 @@ void ResponseCurveComponent::updateChain() {
 
 }
 
+void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
+{
+    juce::AudioBuffer<float> tempIncomingBuffer;
+    while (leftChannelFifo->getNumCompleteBuffersAvailable() > 0)
+    {
+        if (leftChannelFifo->getAudioBuffer(tempIncomingBuffer))
+        {
+            auto size = tempIncomingBuffer.getNumSamples();
+
+            juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, 0),
+                monoBuffer.getReadPointer(0, size),
+                monoBuffer.getNumSamples() - size);
+
+            juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, monoBuffer.getNumSamples() - size),
+                tempIncomingBuffer.getReadPointer(0, 0),
+                size);
+
+            leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.f);
+        }
+    }
+
+    const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();
+    const auto binWidth = sampleRate / double(fftSize);
+
+    while (leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0)
+    {
+        std::vector<float> fftData;
+        if (leftChannelFFTDataGenerator.getFFTData(fftData))
+        {
+            pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth, -48.f);
+        }
+    }
+
+    while (pathProducer.getNumPathsAvailable() > 0)
+    {
+        pathProducer.getPath(leftChannelFFTPath);
+    }
+}
+
 void ResponseCurveComponent::timerCallback() {
+
+   /* if (shouldShowFFTAnalysis)
+    {
+        auto fftBounds = getAnalysisArea().toFloat();
+        auto sampleRate = audioProcessor.getSampleRate();
+
+        leftPathProducer.process(fftBounds, sampleRate);
+        rightPathProducer.process(fftBounds, sampleRate);
+    }*/
 
     if (parametersChanged.compareAndSetBool(false, true))
     {
@@ -391,10 +441,42 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
 {
 
     using namespace juce;
-    //auto responseArea = getLocalBounds();
+    auto responseArea = getLocalBounds();
+
+    //-------------------------------------------------------------
+
+     if( shouldShowFFTAnalysis )
+    {
+        auto leftChannelFFTPath = leftPathProducer.getPath();
+        leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY()));
+        
+        g.setColour(Colour(97u, 18u, 167u)); //purple-
+        g.strokePath(leftChannelFFTPath, PathStrokeType(1.f));
+        
+        auto rightChannelFFTPath = rightPathProducer.getPath();
+        rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY()));
+        
+        g.setColour(Colour(215u, 201u, 134u));
+        g.strokePath(rightChannelFFTPath, PathStrokeType(1.f));
+    }
+    
+    g.setColour(Colours::white);
+    g.strokePath(responseCurve, PathStrokeType(2.f));
+    
+    Path border;
+    
+    border.setUsingNonZeroWinding(false);
+    
+    border.addRoundedRectangle(getRenderArea(), 4);
+    border.addRectangle(getLocalBounds());
+
+
+
+
+    //==========================================================
 
     g.drawImage(background, getLocalBounds().toFloat());
-    auto responseArea = getRenderArea();
+    responseArea = getRenderArea();
 
     auto w = responseArea.getWidth();
 
@@ -446,8 +528,10 @@ void ResponseCurveComponent::paint(juce::Graphics& g)
 
     Path responseCurve;
 
-    const double outputMin = responseArea.getBottom();
-    const double outputMax = responseArea.getY();
+    responseCurve.clear();
+
+    double outputMin = responseArea.getBottom();
+    double outputMax = responseArea.getY();
     auto map = [outputMin, outputMax](double input)
     {
         return jmap(input, -24.0, 24.0, outputMin, outputMax);
@@ -621,17 +705,17 @@ void ParametricEQAudioProcessorEditor::resized()
     // subcomponents in your editor..
 
     auto bounds = getLocalBounds();
-   /* bounds.removeFromTop(4);
+    bounds.removeFromTop(4);
 
     auto analyzerEnabledArea = bounds.removeFromTop(25);
 
     analyzerEnabledArea.setWidth(50);
     analyzerEnabledArea.setX(5);
-    analyzerEnabledArea.removeFromTop(2);*/
+    analyzerEnabledArea.removeFromTop(2);
 
-    //analyzerEnabledButton.setBounds(analyzerEnabledArea);
+    analyzerEnabledButton.setBounds(analyzerEnabledArea);
 
-    //bounds.removeFromTop(5);
+    bounds.removeFromTop(5);
 
     float hRatio = 25.f / 100.f; //JUCE_LIVE_CONSTANT(25) / 100.f;
     auto responseArea = bounds.removeFromTop(bounds.getHeight() * hRatio); //change from 0.33 to 0.25 because I needed peak hz text to not overlap the slider thumb

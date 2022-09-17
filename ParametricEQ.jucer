@@ -3,8 +3,9 @@
 <JUCERPROJECT id="JDW7ga" name="ParametricEQ" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
               companyEmail="Salatd0852@gmail.com" companyWebsite="www.thebuzzybrain.com"
-              cppLanguageStandard="17">
+              cppLanguageStandard="17" pluginManufacturer="D Music">
   <MAINGROUP id="ja7jJQ" name="ParametricEQ">
+    <GROUP id="{09E25C49-C07F-CDF2-F081-7FA2FECCDDC1}" name="Resources"/>
     <GROUP id="{C0D4E705-6DFD-479C-58EC-87042953C83E}" name="Source">
       <FILE id="bIemDg" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
@@ -14,10 +15,11 @@
             file="Source/PluginEditor.cpp"/>
       <FILE id="AMYvwP" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
+    <FILE id="GMDA1o" name="img.jpeg" compile="0" resource="1" file="../../../Downloads/img.jpeg"/>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
   <EXPORTFORMATS>
-    <VS2022 targetFolder="Builds/VisualStudio2022">
+    <VS2022 targetFolder="Builds/VisualStudio2022" smallIcon="GMDA1o" bigIcon="GMDA1o">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="ParametricEQ"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="ParametricEQ"/>
